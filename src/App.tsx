@@ -5,7 +5,6 @@ import './App.css'
 import GridExample from './components/GridExample'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     

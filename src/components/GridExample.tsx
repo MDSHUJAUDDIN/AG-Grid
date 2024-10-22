@@ -5,36 +5,52 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import React, {  useState } from "react";
-
+import React, { useEffect, useState,useMemo } from "react";
 
 // Row Data Interface
 interface IRow {
-  make: string;
-  model: string;
-  price: number;
-  electric: boolean;
+  entityName: string;
+  parentID: string;
+  status: string;
+  countryInc: string;
+  entityType: string;
+  federalID: number;
+  functionalCurrency: string;
+  dateInc: string;
+  primaryContact: string;
 }
 
 // Create new GridExample component
 const GridExample = () => {
-  // Row Data: The data to be displayed.
-  const [rowData, setRowData] = useState<IRow[]>([
-    { make: "Tesla", model: "Model Y", price: 64950, electric: true },
-    { make: "Ford", model: "F-Series", price: 33850, electric: false },
-    { make: "Toyota", model: "Corolla", price: 29600, electric: false },
-    { make: "Mercedes", model: "EQA", price: 48890, electric: true },
-    { make: "Fiat", model: "500", price: 15774, electric: false },
-    { make: "Nissan", model: "Juke", price: 20675, electric: false },
-  ]);
+
+  const [rowData, setRowData] = useState<IRow[]>([]);
 
   // Column Definitions: Defines & controls grid columns.
-  const [colDefs, setColDefs] = useState<ColDef<IRow>[]>([
-    { field: "make" ,filter:true },
-    { field: "model" },
-    { field: "price" },
-    { field: "electric" },
+  const [colDefs] = useState<ColDef<IRow>[]>([
+   
+    { field: "parentID", headerName: "Parent ID", filter: true  },
+    { field: "status", headerName: "Status" , filter: true },
+    { field: "countryInc", headerName: "Country Inc.", filter: true  },
+    { field: "entityType", headerName: "Entity Type", filter: true  },
+    { field: "entityName", headerName: "Entity Name", filter: true, pinned :"left",tooltipField:"entityName" },
+    { field: "federalID", headerName: "Federal ID", filter: true  },
+    { field: "functionalCurrency", headerName: "Functional Currency" , filter: true },
+    { field: "dateInc", headerName: "Date Inc.", filter: true  },
+    { field: "primaryContact", headerName: "Primary Contact" , filter: true },
   ]);
+
+  const rowSelection = useMemo(() => {
+    return{
+          mode :"multiRow",
+    }
+  })
+
+  useEffect(() => {
+    fetch("http://localhost:3004/users")
+      .then((response) => response.json())
+      .then((rowData) => setRowData(rowData))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   const defaultColDef: ColDef = {
     flex: 1,
@@ -42,16 +58,13 @@ const GridExample = () => {
 
   // Container: Defines the grid's theme & dimensions.
   return (
-    <div
-      className={
-        "ag-theme-quartz p-4"
-      }
-      style={{ width: "100%", height: "340px" }}
-    >
+    <div className="ag-theme-quartz" style={{ padding: "16px", width: "100%", height: "90vh" }}>
       <AgGridReact
         rowData={rowData}
         columnDefs={colDefs}
         defaultColDef={defaultColDef}
+        pagination ={true}
+        rowSelection = {rowSelection}
       />
     </div>
   );
