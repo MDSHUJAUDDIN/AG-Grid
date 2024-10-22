@@ -5,7 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import React, {  useState } from "react";
+import React, {  useCallback, useRef, useState } from "react";
 
 
 // Row Data Interface
@@ -18,6 +18,7 @@ interface IRow {
 
 // Create new GridExample component
 const GridExample = () => {
+
   // Row Data: The data to be displayed.
   const [rowData, setRowData] = useState<IRow[]>([
     { make: "Tesla", model: "Model Y", price: 64950, electric: true },
@@ -30,17 +31,19 @@ const GridExample = () => {
 
   // Column Definitions: Defines & controls grid columns.
   const [colDefs, setColDefs] = useState<ColDef<IRow>[]>([
-    { field: "make" ,filter:true },
-    { field: "model" },
-    { field: "price" },
-    { field: "electric" },
+    { field: "make" ,filter:true , floatingFilter:true},
+    { field: "model",  filter:true , floatingFilter:true},
+    { field: "price", filter:true , floatingFilter:true},
+    { field: "electric"},
   ]);
 
   const defaultColDef: ColDef = {
     flex: 1,
   };
-
+  
   // Container: Defines the grid's theme & dimensions.
+  
+  
   return (
     <div
       className={
@@ -52,6 +55,7 @@ const GridExample = () => {
         rowData={rowData}
         columnDefs={colDefs}
         defaultColDef={defaultColDef}
+        
       />
     </div>
   );
