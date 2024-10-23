@@ -1,60 +1,207 @@
-// Theme
-import { ColDef } from "ag-grid-community";
-import { AgGridReact } from "ag-grid-react";
-// React Grid Logic
+import React, { useRef } from 'react';
+import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
-// Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import React, {  useState } from "react";
+import "ag-grid-enterprise";
 
-
-// Row Data Interface
-interface IRow {
-  make: string;
-  model: string;
-  price: number;
-  electric: boolean;
+// Define the interface for the row data
+interface RowData {
+    entityName: string;
+    parentId: string;
+    status: string;
+    countryInc: string;
+    entityType: string;
+    federalId: string;
+    functionalCurrency: string;
+    dateInc: string;
+    primaryContact: string;
+    actions: string;
 }
 
-// Create new GridExample component
-const GridExample = () => {
-  // Row Data: The data to be displayed.
-  const [rowData, setRowData] = useState<IRow[]>([
-    { make: "Tesla", model: "Model Y", price: 64950, electric: true },
-    { make: "Ford", model: "F-Series", price: 33850, electric: false },
-    { make: "Toyota", model: "Corolla", price: 29600, electric: false },
-    { make: "Mercedes", model: "EQA", price: 48890, electric: true },
-    { make: "Fiat", model: "500", price: 15774, electric: false },
-    { make: "Nissan", model: "Juke", price: 20675, electric: false },
-  ]);
+// Define the GridExample component
+const GridExample: React.FC = () => {
+    const gridRef = useRef<AgGridReact | null>(null);
 
-  // Column Definitions: Defines & controls grid columns.
-  const [colDefs, setColDefs] = useState<ColDef<IRow>[]>([
-    { field: "make" ,filter:true },
-    { field: "model" },
-    { field: "price" },
-    { field: "electric" },
-  ]);
+    // Define the column definitions for the grid
+    const columnDefs = [
+        {
+            headerName: "Entity Name",
+            field: "entityName",
+            checkboxSelection: true,
+            headerCheckboxSelection: true,
+        },
+        { headerName: "Parent ID", field: "parentId" },
+        { headerName: "Status", field: "status" },
+        { headerName: "Country Inc.", field: "countryInc" },
+        { headerName: "Entity Type", field: "entityType" },
+        { headerName: "Federal ID", field: "federalId" },
+        { headerName: "Functional Currency", field: "functionalCurrency" },
+        { headerName: "Date Inc", field: "dateInc" },
+        { headerName: "Primary Contact", field: "primaryContact" },
+        { headerName: "Actions", field: "actions" },
+    ];
 
-  const defaultColDef: ColDef = {
-    flex: 1,
-  };
+    // Sample row data
+    const rowData: RowData[] = [
+      {
+          entityName: "Benelux NV Corp.",
+          parentId: "ABC Inc.",
+          status: "Active",
+          countryInc: "US",
+          entityType: "Domestic",
+          federalId: "XX-XXXX4578",
+          functionalCurrency: "USD",
+          dateInc: "11/23/2000",
+          primaryContact: "John, Doe",
+          actions: "..."
+      },
+      {
+          entityName: "KB Holdings",
+          parentId: "KPG Inc.",
+          status: "Active",
+          countryInc: "Australia",
+          entityType: "Foreign",
+          federalId: "XX-XXXX2374",
+          functionalCurrency: "AUD",
+          dateInc: "8/16/2012",
+          primaryContact: "Mark, Bain",
+          actions: "..."
+      },
+      {
+          entityName: "National Holdings",
+          parentId: "XYZ Corp.",
+          status: "Active",
+          countryInc: "Canada",
+          entityType: "Foreign",
+          federalId: "XX-XXXX9826",
+          functionalCurrency: "CAD",
+          dateInc: "4/12/2011",
+          primaryContact: "Orlando",
+          actions: "..."
+      },
+      {
+          entityName: "Benelux NV Corp.",
+          parentId: "BNV Inc.",
+          status: "Active",
+          countryInc: "US",
+          entityType: "Domestic",
+          federalId: "XX-XXXX4578",
+          functionalCurrency: "USD",
+          dateInc: "5/21/2000",
+          primaryContact: "Isaac, Martin",
+          actions: "..."
+      },
+      {
+          entityName: "KB Holdings",
+          parentId: "KBH Inc.",
+          status: "Active",
+          countryInc: "Australia",
+          entityType: "Foreign",
+          federalId: "XX-XXXX2374",
+          functionalCurrency: "AUD",
+          dateInc: "4/15/2012",
+          primaryContact: "Martin",
+          actions: "..."
+      },
+      {
+          entityName: "National Holdings",
+          parentId: "NH Corp.",
+          status: "Active",
+          countryInc: "Canada",
+          entityType: "Foreign",
+          federalId: "XX-XXXX9826",
+          functionalCurrency: "CAD",
+          dateInc: "11/23/2000",
+          primaryContact: "Mark, Bain",
+          actions: "..."
+      },
+      {
+          entityName: "Benelux NV Corp.",
+          parentId: "BNC Corp.",
+          status: "Active",
+          countryInc: "US",
+          entityType: "Domestic",
+          federalId: "XX-XXXX4578",
+          functionalCurrency: "USD",
+          dateInc: "8/16/2012",
+          primaryContact: "Mathews",
+          actions: "..."
+      },
+      {
+          entityName: "KB Holdings",
+          parentId: "ABC Inc.",
+          status: "Active",
+          countryInc: "Australia",
+          entityType: "Foreign",
+          federalId: "XX-XXXX2374",
+          functionalCurrency: "AUD",
+          dateInc: "4/12/2011",
+          primaryContact: "John, Ashley",
+          actions: "..."
+      },
+      {
+          entityName: "National Holdings",
+          parentId: "NH Corp.",
+          status: "Active",
+          countryInc: "Canada",
+          entityType: "Foreign",
+          federalId: "XX-XXXX9826",
+          functionalCurrency: "CAD",
+          dateInc: "5/21/2000",
+          primaryContact: "Ashley, Jhonson",
+          actions: "..."
+      },
+      // Add other row data as needed...
+  ];
 
-  // Container: Defines the grid's theme & dimensions.
-  return (
-    <div
-      className={
-        "ag-theme-quartz p-4"
-      }
-      style={{ width: "100%", height: "340px" }}
-    >
-      <AgGridReact
-        rowData={rowData}
-        columnDefs={colDefs}
-        defaultColDef={defaultColDef}
-      />
-    </div>
-  );
+    // Default column properties
+    const defaultColDef = {
+        sortable: true,
+        filter: true,
+        floatingFilter: true,
+        flex: 1,
+    };
+
+    // Function to export data as Excel
+    const onBtExport = () => {
+        if (gridRef.current) {
+            gridRef.current.api.exportDataAsExcel({
+                fileName: 'exported-data.xlsx',
+                columnKeys: [
+                    'entityName',
+                    'parentId',
+                    'status',
+                    'countryInc',
+                    'entityType',
+                    'federalId',
+                    'functionalCurrency',
+                    'dateInc',
+                    'primaryContact',
+                ],
+            });
+        }
+    };
+
+    // Render the component
+    return (
+        <div className="py-0 px-20">
+            <button
+                onClick={onBtExport}
+                className="mb-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            >
+                Export to Excel
+            </button>
+            <div className="ag-theme-quartz" style={{ height: 400, width: '100%' }}>
+                <AgGridReact
+                    ref={gridRef}
+                    columnDefs={columnDefs}
+                    rowData={rowData}
+                    defaultColDef={defaultColDef}
+                    rowSelection="multiple"
+                />
+            </div>
+        </div>
+    );
 };
 
 export default GridExample;
