@@ -17,7 +17,7 @@ function DataGrid<T>({
 }: DataGridProps<T>) {
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
-  
+
 
   const onGridReady = (params: { api: GridApi }) => {
     setGridApi(params.api);
@@ -45,16 +45,18 @@ function DataGrid<T>({
 
   return (
     <div className={"ag-theme-quartz"} style={{ padding: "16px", width: "100%", height: "90vh" }}>
-      <div className="p-2">
+      <div className="p-2" style={{ display: "flex", justifyContent: "space-between" }}>
         <button onClick={exportToExcel}>Export to Excel</button>
-        <br />
-        <span>Quick Filter:</span>
-        <input
-          type="text"
-          id="filter-text-box"
-          placeholder="Filter..."
-          onInput={onFilterTextBoxChanged}
-        />
+        <div>
+          <span>Quick Filter:</span>
+          <input
+            style={{ padding: "5px", borderRadius: "3px" }}
+            type="text"
+            id="filter-text-box"
+            placeholder="Filter..."
+            onInput={onFilterTextBoxChanged}
+          />
+        </div>
       </div>
       <AgGridReact
         ref={gridRef}
