@@ -1,29 +1,23 @@
 import { useCallback, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, GridOptions, GridApi } from "ag-grid-community";
+import { ColDef, GridApi } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-community/styles/ag-theme-balham.css";
 import "ag-grid-community/styles/ag-theme-material.css";
 import "ag-grid-enterprise";
+import { DataGridConfig } from "./DataGridConfig";
 
-type GenericGridProps<T> = {
-  gridConfig: {
-    columnDefs: ColDef[];
-    gridOptions?: GridOptions;
-  };
-  rowData: T[];
-  theme?: string;
-}
+type DataGridProps<T> = DataGridConfig<T>
 
-function GenericGrid<T>({
-  gridConfig,
+function DataGrid<T>({
+  gridConfig: { columnDefs, agGridOptions },
   rowData,
-  theme = "ag-theme-quartz",
-}: GenericGridProps<T>) {
+}: DataGridProps<T>) {
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
+  
 
   const onGridReady = (params: { api: GridApi }) => {
     setGridApi(params.api);
@@ -50,7 +44,7 @@ function GenericGrid<T>({
   };
 
   return (
-    <div className={theme} style={{ height: "351px", width: "100%" }}>
+    <div className={"ag-theme-quartz"} style={{ height: "351px", width: "100%" }}>
       <div className="p-2">
         <button onClick={exportToExcel}>Export to Excel</button>
         <br />
@@ -64,16 +58,16 @@ function GenericGrid<T>({
       </div>
       <AgGridReact
         ref={gridRef}
-        columnDefs={gridConfig.columnDefs}
+        columnDefs={columnDefs}
         defaultColDef={defaultColDef}
         rowData={rowData}
         onGridReady={onGridReady}
         rowSelection={{ mode: "multiRow" }}
         animateRows
-        {...gridConfig.gridOptions} // Spread any additional grid options from the config
+        {...agGridOptions} // Spread any additional grid options from the config
       />
     </div>
   );
 }
 
-export default GenericGrid;
+export default DataGrid;
