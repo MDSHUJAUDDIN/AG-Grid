@@ -1,11 +1,26 @@
 // Theme
-import { ColDef } from "ag-grid-community";
+import { ColDef,ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 // React Grid Logic
 import "ag-grid-community/styles/ag-grid.css";
 // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import React, { useEffect, useState,useMemo } from "react";
+import { FiltersToolPanelModule } from "@ag-grid-enterprise/filter-tool-panel";
+import { MenuModule } from "@ag-grid-enterprise/menu";
+import { MultiFilterModule } from "@ag-grid-enterprise/multi-filter";
+import { RowGroupingModule } from "@ag-grid-enterprise/row-grouping";
+import { SetFilterModule } from "@ag-grid-enterprise/set-filter";
+
+
+// Register enterprise modules
+ModuleRegistry.registerModules([
+  FiltersToolPanelModule,
+  MenuModule,
+  MultiFilterModule,
+  RowGroupingModule,
+  SetFilterModule,
+]);
 
 // Row Data Interface
 interface IRow {
@@ -28,10 +43,10 @@ const GridExample = () => {
   // Column Definitions: Defines & controls grid columns.
   const [colDefs] = useState<ColDef<IRow>[]>([
    
-    { field: "parentID", headerName: "Parent ID", filter: true  },
-    { field: "status", headerName: "Status" , filter: true },
-    { field: "countryInc", headerName: "Country Inc.", filter: true  },
-    { field: "entityType", headerName: "Entity Type", filter: true  },
+    { field: "parentID", headerName: "Parent ID", filter: "agTextColumnFilter"  },
+    { field: "status", headerName: "Status" , filter: "agTextColumnFilter" },
+    { field: "countryInc", headerName: "Country Inc.", filter: "agTextColumnFilter"  },
+    { field: "entityType", headerName: "Entity Type", filter: "agTextColumnFilter"  },
     { field: "entityName", headerName: "Entity Name", filter: true, pinned :"left",tooltipField:"entityName" },
     { field: "federalID", headerName: "Federal ID", filter: true  },
     { field: "functionalCurrency", headerName: "Functional Currency" , filter: true },
@@ -54,8 +69,11 @@ const GridExample = () => {
 
   const defaultColDef: ColDef = {
     flex: 1,
+    filter: true, // Enable filtering
+    sortable: true, // Enable sorting
+    resizable: true, // Enable resizing
+    menuTabs: ['filterMenuTab', 'generalMenuTab', 'columnsMenuTab'], // Show column menus (3 dots)
   };
-
   // Container: Defines the grid's theme & dimensions.
   return (
     <div className="ag-theme-quartz" style={{ padding: "16px", width: "100%", height: "90vh" }}>
