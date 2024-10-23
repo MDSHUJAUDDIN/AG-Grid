@@ -1,11 +1,11 @@
 export type Entity = {
     entityName: string;
-    parentId: string;
+    // parentId: string;
     status: boolean;
-    countryName: string;
+    countryInc: string;
     entityType: string;
-    federalId: number;
-    currency: string;
-    date: string;
+    federalID: number;
+    functionalCurrency: string;
+    dateInc: string;
     primaryContact: string;
   }

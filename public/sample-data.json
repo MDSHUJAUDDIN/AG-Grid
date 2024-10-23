@@ -70,7 +70,6 @@
   "gridConfig": {
     "columnDefs": [
       { "headerName": "Entity Name", "field": "entityName" },
-      { "headerName": "Parent ID", "field": "parentId" },
       { "headerName": "Status", "field": "status" },
       { "headerName": "Country Inc.", "field": "countryName" },
       { "headerName": "Entity Type", "field": "entityType" },

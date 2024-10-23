@@ -11,7 +11,7 @@ const App: FC = () => {
   );
 
   useEffect(() => {
-    fetch("/sample-data.json")
+    fetch("/db.json")
       .then((response: Response) => response.json())
       .then((data: DataGridConfig<Entity>) => setGridConfig(data))
       .catch((error) => console.error("Error fetching data:", error));
@@ -19,10 +19,8 @@ const App: FC = () => {
 
 
   return (
-    <div>
-      <h1 className="text-center p-4 text-xl font-bold">
-        Generic Grid Component
-      </h1>
+    <div className='flex-col justify-center items-center h-[100vh] bg-slate-300'>
+      <h1 className='text-center p-4 text-xl font-bold'>AG-Grid</h1>
       {gridConfig && <DataGrid<Entity> {...gridConfig} />}
     </div>
   );

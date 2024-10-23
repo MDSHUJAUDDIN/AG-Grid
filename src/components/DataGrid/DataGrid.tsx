@@ -44,7 +44,7 @@ function DataGrid<T>({
   };
 
   return (
-    <div className={"ag-theme-quartz"} style={{ height: "351px", width: "100%" }}>
+    <div className={"ag-theme-quartz"} style={{ padding: "16px", width: "100%", height: "90vh" }}>
       <div className="p-2">
         <button onClick={exportToExcel}>Export to Excel</button>
         <br />
