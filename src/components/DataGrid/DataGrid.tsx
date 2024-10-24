@@ -36,12 +36,7 @@ function DataGrid<T>({
     );
   }, []);
 
-   //code for editing the cells
-  //'tab' makes the cursor move to right cell in the editing row
-  //'shift' + 'tab' makes the cursor move to left cell in the editing row
-  const onCellValueChanged = useCallback((event: CellValueChangedEvent) => {
-    //console.log('onCellValueChanged: ' + event.colDef.field + ' = ' + event.newValue);
-}, []);
+
 
   const defaultColDef: ColDef = {
     sortable: true,
@@ -71,7 +66,6 @@ function DataGrid<T>({
         defaultColDef={defaultColDef}
         rowData={rowData}
         editType={"fullRow"}
-        onCellValueChanged={onCellValueChanged}
         onGridReady={onGridReady}
         rowSelection={{ mode: "multiRow" }}
         animateRows
