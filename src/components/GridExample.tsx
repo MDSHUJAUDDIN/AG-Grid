@@ -1,29 +1,33 @@
-import React, { useRef } from 'react';
-import { AgGridReact } from 'ag-grid-react';
+// Theme
+import { ColDef } from "ag-grid-community";
+import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 
-// Define the interface for the row data
-interface RowData {
+// Row Data Interface
+interface IRow {
     entityName: string;
     parentId: string;
-    status: string;
+    status: string; // 'active' or 'inactive'
     countryInc: string;
     entityType: string;
     federalId: string;
     functionalCurrency: string;
     dateInc: string;
     primaryContact: string;
-    actions: string;
 }
 
-// Define the GridExample component
+// Create new GridExample component
 const GridExample: React.FC = () => {
     const gridRef = useRef<AgGridReact | null>(null);
+    const [rowData, setRowData] = useState<IRow[]>([]);
+    const [filteredData, setFilteredData] = useState<IRow[]>([]);
+    const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all'); // Track active filter
 
-    // Define the column definitions for the grid
-    const columnDefs = [
+    // Column Definitions: Defines & controls grid columns.
+    const [colDefs] = useState<ColDef<IRow>[]>([
         {
             headerName: "Entity Name",
             field: "entityName",
@@ -38,131 +42,40 @@ const GridExample: React.FC = () => {
         { headerName: "Functional Currency", field: "functionalCurrency" },
         { headerName: "Date Inc", field: "dateInc" },
         { headerName: "Primary Contact", field: "primaryContact" },
-        { headerName: "Actions", field: "actions" },
-    ];
+    ]);
 
-    // Sample row data
-    const rowData: RowData[] = [
-      {
-          entityName: "Benelux NV Corp.",
-          parentId: "ABC Inc.",
-          status: "Active",
-          countryInc: "US",
-          entityType: "Domestic",
-          federalId: "XX-XXXX4578",
-          functionalCurrency: "USD",
-          dateInc: "11/23/2000",
-          primaryContact: "John, Doe",
-          actions: "..."
-      },
-      {
-          entityName: "KB Holdings",
-          parentId: "KPG Inc.",
-          status: "Active",
-          countryInc: "Australia",
-          entityType: "Foreign",
-          federalId: "XX-XXXX2374",
-          functionalCurrency: "AUD",
-          dateInc: "8/16/2012",
-          primaryContact: "Mark, Bain",
-          actions: "..."
-      },
-      {
-          entityName: "National Holdings",
-          parentId: "XYZ Corp.",
-          status: "Active",
-          countryInc: "Canada",
-          entityType: "Foreign",
-          federalId: "XX-XXXX9826",
-          functionalCurrency: "CAD",
-          dateInc: "4/12/2011",
-          primaryContact: "Orlando",
-          actions: "..."
-      },
-      {
-          entityName: "Benelux NV Corp.",
-          parentId: "BNV Inc.",
-          status: "Active",
-          countryInc: "US",
-          entityType: "Domestic",
-          federalId: "XX-XXXX4578",
-          functionalCurrency: "USD",
-          dateInc: "5/21/2000",
-          primaryContact: "Isaac, Martin",
-          actions: "..."
-      },
-      {
-          entityName: "KB Holdings",
-          parentId: "KBH Inc.",
-          status: "Active",
-          countryInc: "Australia",
-          entityType: "Foreign",
-          federalId: "XX-XXXX2374",
-          functionalCurrency: "AUD",
-          dateInc: "4/15/2012",
-          primaryContact: "Martin",
-          actions: "..."
-      },
-      {
-          entityName: "National Holdings",
-          parentId: "NH Corp.",
-          status: "Active",
-          countryInc: "Canada",
-          entityType: "Foreign",
-          federalId: "XX-XXXX9826",
-          functionalCurrency: "CAD",
-          dateInc: "11/23/2000",
-          primaryContact: "Mark, Bain",
-          actions: "..."
-      },
-      {
-          entityName: "Benelux NV Corp.",
-          parentId: "BNC Corp.",
-          status: "Active",
-          countryInc: "US",
-          entityType: "Domestic",
-          federalId: "XX-XXXX4578",
-          functionalCurrency: "USD",
-          dateInc: "8/16/2012",
-          primaryContact: "Mathews",
-          actions: "..."
-      },
-      {
-          entityName: "KB Holdings",
-          parentId: "ABC Inc.",
-          status: "Active",
-          countryInc: "Australia",
-          entityType: "Foreign",
-          federalId: "XX-XXXX2374",
-          functionalCurrency: "AUD",
-          dateInc: "4/12/2011",
-          primaryContact: "John, Ashley",
-          actions: "..."
-      },
-      {
-          entityName: "National Holdings",
-          parentId: "NH Corp.",
-          status: "Active",
-          countryInc: "Canada",
-          entityType: "Foreign",
-          federalId: "XX-XXXX9826",
-          functionalCurrency: "CAD",
-          dateInc: "5/21/2000",
-          primaryContact: "Ashley, Jhonson",
-          actions: "..."
-      },
-      // Add other row data as needed...
-  ];
-
-    // Default column properties
-    const defaultColDef = {
+    const defaultColDef: ColDef = {
         sortable: true,
         filter: true,
         floatingFilter: true,
         flex: 1,
     };
 
-    // Function to export data as Excel
+    useEffect(() => {
+        fetch("/db.json")
+            .then((response: Response) => response.json())
+            .then((data: IRow[]) => {
+                setRowData(data);
+                setFilteredData(data); // Set filtered data to all data initially
+            })
+            .catch((error) => console.error("Error fetching data:", error));
+    }, []);
+
+    const filterActive = () => {
+        setFilteredData(rowData.filter(row => row.status.toLowerCase() === 'active'));
+        setActiveFilter('active'); // Update active filter
+    };
+
+    const filterInactive = () => {
+        setFilteredData(rowData.filter(row => row.status.toLowerCase() === 'inactive'));
+        setActiveFilter('inactive'); // Update inactive filter
+    };
+
+    const showAll = () => {
+        setFilteredData(rowData);
+        setActiveFilter('all'); // Update All filter
+    };
+
     const onBtExport = () => {
         if (gridRef.current) {
             gridRef.current.api.exportDataAsExcel({
@@ -182,23 +95,52 @@ const GridExample: React.FC = () => {
         }
     };
 
-    // Render the component
+    // Container: Defines the grid's theme & dimensions.
     return (
-        <div className="py-0 px-20">
-            <button
-                onClick={onBtExport}
-                className="mb-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-            >
-                Export to Excel
-            </button>
-            <div className="ag-theme-quartz" style={{ height: 400, width: '100%' }}>
-                <AgGridReact
-                    ref={gridRef}
-                    columnDefs={columnDefs}
-                    rowData={rowData}
-                    defaultColDef={defaultColDef}
-                    rowSelection="multiple"
-                />
+        <div>
+            <div className="mx-4">
+                <nav className="bg-white p-4 shadow">
+                    <div className="flex items-center justify-between">
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={showAll}
+                                className={`text-black hover:bg-gray-100 px-3 py-2 rounded ${activeFilter === 'all' ? 'bg-gray-200' : ''}`} // Highlight if All
+                            >
+                                All
+                            </button>
+                            <button
+                                onClick={filterActive}
+                                className={`text-black hover:bg-gray-100 px-3 py-2 rounded ${activeFilter === 'active' ? 'bg-gray-200' : ''}`} // Highlight if active
+                            >
+                                Active
+                            </button>
+                            <button
+                                onClick={filterInactive}
+                                className={`text-black hover:bg-gray-100 px-3 py-2 rounded ${activeFilter === 'inactive' ? 'bg-gray-200' : ''}`} // Highlight if inactive
+                            >
+                                Inactive
+                            </button>
+                        </div>
+                        <button
+                            onClick={onBtExport}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        >
+                            Export to Excel
+                        </button>
+                    </div>
+                </nav>
+            </div>
+
+            <div className="mx-4">
+                <div className="ag-theme-quartz" style={{ height: '600px', width: '100%' }}>
+                    <AgGridReact
+                        ref={gridRef}
+                        columnDefs={colDefs}
+                        rowData={filteredData}
+                        defaultColDef={defaultColDef}
+                        rowSelection="multiple"
+                    />
+                </div>
             </div>
         </div>
     );
