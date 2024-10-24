@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, GridApi } from "ag-grid-community";
+import { CellValueChangedEvent, ColDef, GridApi } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -36,6 +36,13 @@ function DataGrid<T>({
     );
   }, []);
 
+   //code for editing the cells
+  //'tab' makes the cursor move to right cell in the editing row
+  //'shift' + 'tab' makes the cursor move to left cell in the editing row
+  const onCellValueChanged = useCallback((event: CellValueChangedEvent) => {
+    //console.log('onCellValueChanged: ' + event.colDef.field + ' = ' + event.newValue);
+}, []);
+
   const defaultColDef: ColDef = {
     sortable: true,
     editable: true,
@@ -63,6 +70,8 @@ function DataGrid<T>({
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
         rowData={rowData}
+        editType={"fullRow"}
+        onCellValueChanged={onCellValueChanged}
         onGridReady={onGridReady}
         rowSelection={{ mode: "multiRow" }}
         animateRows
