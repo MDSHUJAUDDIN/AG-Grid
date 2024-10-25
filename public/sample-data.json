@@ -70,12 +70,16 @@
   "gridConfig": {
     "columnDefs": [
       { "headerName": "Entity Name", "field": "entityName" },
-      { "headerName": "Status", "field": "status" },
+      { "headerName": "Status", "field": "status", "cellEditor": "agCheckboxCellEditor"},
       { "headerName": "Country Inc.", "field": "countryName" },
       { "headerName": "Entity Type", "field": "entityType" },
       { "headerName": "Federal ID", "field": "federalId" },
-      { "headerName": "Functional Currency", "field": "currency" },
-      { "headerName": "Date Inc.", "field": "date" },
+      { "headerName": "Functional Currency", "field": "currency",
+      "cellEditor": "agSelectCellEditor",
+      "cellEditorParams": {
+          "values": ["AUD","CAD","USD"]
+      } },
+      { "headerName": "Date Inc.", "field": "date" ,"cellEditor": "agDateStringCellEditor"},
       { "headerName": "Primary Contact", "field": "primaryContact" },
       { "headerName": "Actions", "field": "" }
     ],

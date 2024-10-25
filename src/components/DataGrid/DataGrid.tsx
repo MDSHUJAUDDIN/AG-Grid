@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { CellValueChangedEvent, ColDef, GridApi } from "ag-grid-community";
+import { CellValueChangedEvent, ColDef, GridApi, RowValueChangedEvent } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -8,6 +8,7 @@ import "ag-grid-community/styles/ag-theme-balham.css";
 import "ag-grid-community/styles/ag-theme-material.css";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
+
 
 type DataGridProps<T> = DataGridConfig<T>
 
@@ -36,6 +37,13 @@ function DataGrid<T>({
     );
   }, []);
 
+  const onCellValueChanged = useCallback((event: CellValueChangedEvent) => {
+    console.log('onCellValueChanged: ' + event.data.colDefs);
+}, []);
+// //row edit
+const onRowValueChanged = useCallback((event: RowValueChangedEvent) => {
+ 
+}, []);
 
 
   const defaultColDef: ColDef = {
@@ -68,6 +76,8 @@ function DataGrid<T>({
         editType={"fullRow"}
         onGridReady={onGridReady}
         rowSelection={{ mode: "multiRow" }}
+        onCellValueChanged={onCellValueChanged}
+        onRowValueChanged={onRowValueChanged}
         animateRows
         {...agGridOptions} // Spread any additional grid options from the config
       />
