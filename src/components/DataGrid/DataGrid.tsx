@@ -1,13 +1,9 @@
 import { useCallback, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ColDef, GridApi } from "ag-grid-community";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "ag-grid-community/styles/ag-theme-balham.css";
-import "ag-grid-community/styles/ag-theme-material.css";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
+import { DataGridTheme } from "./DataGridTheme";
 
 type DataGridProps<T> = DataGridConfig<T>
 
@@ -44,7 +40,7 @@ function DataGrid<T>({
   };
 
   return (
-    <div className={"ag-theme-quartz"} style={{ padding: "16px", width: "100%", height: "90vh" }}>
+    <div style={{ padding: "16px", width: "100%", height: "90vh" }}>
       <div className="p-2" style={{ display: "flex", justifyContent: "space-between" }}>
         <button onClick={exportToExcel}>Export to Excel</button>
         <div>
@@ -59,6 +55,7 @@ function DataGrid<T>({
         </div>
       </div>
       <AgGridReact
+        theme={DataGridTheme}
         ref={gridRef}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
