@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, GridApi } from "ag-grid-community";
+import { ColDef, GridApi, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
 import { DataGridTheme } from "./DataGridTheme";
@@ -36,17 +36,19 @@ function DataGrid<T>({
     sortable: true,
     editable: true,
     resizable: true,
-    // tooltipField: "value",
+    tooltipValueGetter: (params) => params.value,
+    enableRowGroup : true,
+
   };
 
   return (
-    <div style={{ padding: "16px", width: "100%", height: "90vh" }}>
-      <div className="p-2" style={{ display: "flex", justifyContent: "space-between" }}>
+    <div className={"p-4 w-[100%] h-[90vh]"} >
+      <div className="p-2 flex justify-between" >
         <button onClick={exportToExcel}>Export to Excel</button>
-        <div>
+        <div className="flex space-x-4 justify-center items-center">
           <span>Quick Filter:</span>
           <input
-            style={{ padding: "5px", borderRadius: "3px" }}
+            className="p-1  rounded-sm"
             type="text"
             id="filter-text-box"
             placeholder="Filter..."
@@ -63,6 +65,9 @@ function DataGrid<T>({
         onGridReady={onGridReady}
         rowSelection={{ mode: "multiRow" }}
         animateRows
+        rowGroupPanelShow="always"
+        rowDragManaged = {true}
+        suppressDragLeaveHidesColumns = {true}
         {...agGridOptions} // Spread any additional grid options from the config
       />
     </div>

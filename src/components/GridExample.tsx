@@ -5,7 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import React, { useEffect, useState,useMemo } from "react";
+import { useEffect, useState} from "react";
 
 // Row Data Interface
 interface IRow {
@@ -39,11 +39,7 @@ const GridExample = () => {
     { field: "primaryContact", headerName: "Primary Contact" , filter: true },
   ]);
 
-  const rowSelection = useMemo(() => {
-    return{
-          mode :"multiRow",
-    }
-  })
+ 
 
   useEffect(() => {
     fetch("http://localhost:3004/users")
@@ -64,7 +60,7 @@ const GridExample = () => {
         columnDefs={colDefs}
         defaultColDef={defaultColDef}
         pagination ={true}
-        rowSelection = {rowSelection}
+        rowSelection = "multiple"
       />
     </div>
   );

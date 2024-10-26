@@ -10,3 +10,4 @@ export type DataGridOptions<T> = {
     columnDefs: ColDef<T>[]
     agGridOptions: GridOptions
 }
+
