@@ -1,103 +1,149 @@
 // Theme
-import { CellValueChangedEvent,ColDef, DataTypeDefinition, GetRowIdParams, ModuleRegistry, RowValueChangedEvent, ValueFormatterParams } from "ag-grid-community";
-
+import { ColDef } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-// React Grid Logic
 import "ag-grid-community/styles/ag-grid.css";
-// Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import React, { useEffect, useState,useMemo, useCallback, useRef } from "react";
+import "ag-grid-enterprise";
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 
 // Row Data Interface
 interface IRow {
-  entityName: string;
-  parentID: string;
-  status: string;
-  countryInc: string;
-  entityType: string;
-  federalID: number;
-  functionalCurrency: string;
-  dateInc: string;
-  primaryContact: string;
+    entityName: string;
+    parentId: string;
+    status: string; // 'active' or 'inactive'
+    countryInc: string;
+    entityType: string;
+    federalId: string;
+    functionalCurrency: string;
+    dateInc: string;
+    primaryContact: string;
 }
 
 // Create new GridExample component
-const GridExample = () => {
+const GridExample: React.FC = () => {
+    const gridRef = useRef<AgGridReact | null>(null);
+    const [rowData, setRowData] = useState<IRow[]>([]);
+    const [filteredData, setFilteredData] = useState<IRow[]>([]);
+    const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all'); // Track active filter
 
-  const gridRef = useRef<AgGridReact | null>(null);
-  const [rowData, setRowData] = useState<IRow[]>([]);
+    // Column Definitions: Defines & controls grid columns.
+    const [colDefs] = useState<ColDef<IRow>[]>([
+        {
+            headerName: "Entity Name",
+            field: "entityName",
+            checkboxSelection: true,
+            headerCheckboxSelection: true,
+        },
+        { headerName: "Parent ID", field: "parentId" },
+        { headerName: "Status", field: "status" },
+        { headerName: "Country Inc.", field: "countryInc" },
+        { headerName: "Entity Type", field: "entityType" },
+        { headerName: "Federal ID", field: "federalId" },
+        { headerName: "Functional Currency", field: "functionalCurrency" },
+        { headerName: "Date Inc", field: "dateInc" },
+        { headerName: "Primary Contact", field: "primaryContact" },
+    ]);
 
-  // Column Definitions: Defines & controls grid columns.
-  const [colDefs] = useState<ColDef<IRow>[]>([
+    const defaultColDef: ColDef = {
+        sortable: true,
+        filter: true,
+        floatingFilter: true,
+        flex: 1,
+    };
 
-    { field: "entityName", headerName: "Entity Name", filter: true ,pinned :"left",tooltipField:"entityName"},
-    { field: "parentID", headerName: "Parent ID", filter: true  },
-    { field: "status", headerName: "Status" , filter: true,editable:true,
-        cellRenderer:'agCheckboxCellRenderer',
-        cellEditor: 'agCheckboxCellEditor',
-    },
-    { field: "countryInc", headerName: "Country Inc.", filter: true },
-    { field: "entityType", headerName: "Entity Type", filter: true  },
-    { field: "federalID", headerName: "Federal ID", filter: true  },
-    { field: "functionalCurrency", headerName: "Functional Currency" , filter: true,editable:true,
-      cellEditor: 'agSelectCellEditor',
-            cellEditorParams: {
-                values: ['AUD','CAD','USD'],
-            },
-    },
-    { field: "dateInc", headerName: "Date Inc.", filter: true,editable:true,
-      cellEditor: 'agDateCellEditor',
-        cellEditorParams: {
-            min: '01-01-2000',
-            max: '31-12-2024',
+    useEffect(() => {
+        fetch("/db.json")
+            .then((response: Response) => response.json())
+            .then((data: IRow[]) => {
+                setRowData(data);
+                setFilteredData(data); // Set filtered data to all data initially
+            })
+            .catch((error) => console.error("Error fetching data:", error));
+    }, []);
+
+    const filterActive = () => {
+        setFilteredData(rowData.filter(row => row.status.toLowerCase() === 'active'));
+        setActiveFilter('active'); // Update active filter
+    };
+
+    const filterInactive = () => {
+        setFilteredData(rowData.filter(row => row.status.toLowerCase() === 'inactive'));
+        setActiveFilter('inactive'); // Update inactive filter
+    };
+
+    const showAll = () => {
+        setFilteredData(rowData);
+        setActiveFilter('all'); // Update All filter
+    };
+
+    const onBtExport = () => {
+        if (gridRef.current) {
+            gridRef.current.api.exportDataAsExcel({
+                fileName: 'exported-data.xlsx',
+                columnKeys: [
+                    'entityName',
+                    'parentId',
+                    'status',
+                    'countryInc',
+                    'entityType',
+                    'federalId',
+                    'functionalCurrency',
+                    'dateInc',
+                    'primaryContact',
+                ],
+            });
         }
-      },
-    { field: "primaryContact", headerName: "Primary Contact" , filter: true },
-    
-  ]);
+    };
 
+    // Container: Defines the grid's theme & dimensions.
+    return (
+        <div>
+            <div className="mx-4">
+                <nav className="bg-white p-4 shadow">
+                    <div className="flex items-center justify-between">
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={showAll}
+                                className={`text-black hover:bg-gray-100 px-3 py-2 rounded ${activeFilter === 'all' ? 'bg-gray-200' : ''}`} // Highlight if All
+                            >
+                                All
+                            </button>
+                            <button
+                                onClick={filterActive}
+                                className={`text-black hover:bg-gray-100 px-3 py-2 rounded ${activeFilter === 'active' ? 'bg-gray-200' : ''}`} // Highlight if active
+                            >
+                                Active
+                            </button>
+                            <button
+                                onClick={filterInactive}
+                                className={`text-black hover:bg-gray-100 px-3 py-2 rounded ${activeFilter === 'inactive' ? 'bg-gray-200' : ''}`} // Highlight if inactive
+                            >
+                                Inactive
+                            </button>
+                        </div>
+                        <button
+                            onClick={onBtExport}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        >
+                            Export to Excel
+                        </button>
+                    </div>
+                </nav>
+            </div>
 
-  const defaultColDef: ColDef = {
-    flex: 1,
-    editable: true,
-    filter: true,
-    sortable:true,
-  };
-
-const onCellValueChanged = useCallback((event: CellValueChangedEvent) => {
-     console.log('onCellValueChanged: ' + event.data.colDefs);
- }, []);
-// //row edit
-const onRowValueChanged = useCallback((event: RowValueChangedEvent) => {
-  const data = event.data;
-}, []);
-
-  useEffect(() => {
-    fetch("http://localhost:3004/users")
-      .then((response) => response.json())
-      .then((rowData) => setRowData(rowData))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-
-  
-
-  // Container: Defines the grid's theme & dimensions.
-  return (
-    <div className="ag-theme-quartz" style={{ padding: "16px", width: "100%", height: "90vh" }}>
-      <AgGridReact
-        rowData={rowData}
-        columnDefs={colDefs}
-        defaultColDef={defaultColDef}
-        pagination ={true}
-        onCellValueChanged={onCellValueChanged}
-        onRowValueChanged={onRowValueChanged}
-        editType={'fullRow'}
-        rowSelection = {
-          {mode :"multiRow",
-    }}
-      />
-    </div>
-  );
+            <div className="mx-4">
+                <div className="ag-theme-quartz" style={{ height: '600px', width: '100%' }}>
+                    <AgGridReact
+                        ref={gridRef}
+                        columnDefs={colDefs}
+                        rowData={filteredData}
+                        defaultColDef={defaultColDef}
+                        rowSelection="multiple"
+                    />
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default GridExample;
