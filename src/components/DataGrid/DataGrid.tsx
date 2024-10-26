@@ -38,6 +38,7 @@ function DataGrid<T>({
 // //row edit
 const onRowValueChanged = useCallback((event: RowValueChangedEvent) => {
 
+  console.log('onCellValueChanged: ' + event.data);
 }, []);
 
 
