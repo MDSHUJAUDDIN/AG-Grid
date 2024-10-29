@@ -4,6 +4,7 @@ import { ColDef, GridApi } from "ag-grid-community";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
 import { DataGridTheme } from "./DataGridTheme";
+import { SetFilter } from "ag-grid-enterprise";
 
 type DataGridProps<T> = DataGridConfig<T>;
 
@@ -51,6 +52,56 @@ function DataGrid<T>({
     tooltipValueGetter: (params) => params.value,
     enableRowGroup: true,
   };
+  
+  
+
+  const getContextMenuItems = (params: any) => {
+    const result: any[] = [
+      {
+        name: "Add row Above",
+        action: () => {
+          console.log("Edit action clicked for", params.node.data);
+        },
+        icon: '<i class="fas fa-edit"></i>',
+      },
+      {
+        name: "Add row below",
+        action: () => {
+          console.log("Add row below", params.node.data);
+        },
+        icon: '<i class="fas fa-trash"></i>',
+      },
+      "separator",
+      {
+        name: "Delete",
+        action: (event: { node: { data: any; }; api: 
+          { applyTransaction: (arg0: { remove: any[]; }) => void; }; }) => 
+            {
+                const selectedRows =[event.node.data];
+                event.api.applyTransaction({ remove: selectedRows });
+            },
+        icon: '<i class="fas fa-trash"></i>',
+      },
+      {
+        name: "Highlight Row",
+        action: () => {
+          console.log("Highlight Row", params.node.data);
+          //highlightRow(params.node.data)
+
+        },
+        icon: '<i class="fas fa-trash"></i>',
+      },
+    ];
+    return result;
+  };
+  
+  // const highlightRow = (nodeData : any) => {
+  //   const rowNode = nodeData;
+  //   console.log(rowNode);
+  //   rowNode.setData({ className: 'highlighted-row' });
+  // };
+
+
 
   return (
     <div className={"p-4 w-[100%] h-[90vh]"}>
@@ -81,6 +132,8 @@ function DataGrid<T>({
         rowGroupPanelShow="always"
         rowDragManaged={true}
         suppressDragLeaveHidesColumns={true}
+        getContextMenuItems={getContextMenuItems} 
+        //getRowStyle={getRowStyle}
         {...agGridOptions} // Spread any additional grid options from the config
       />
     </div>

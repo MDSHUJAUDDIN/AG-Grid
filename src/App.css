@@ -42,4 +42,7 @@
 } */
 
 
-
+.highlighted-row {
+  background-color:yellow; /* yellow highlight */
+  font-weight: bold;
+}
