@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, GridApi } from "ag-grid-community";
+import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
 import { DataGridTheme } from "./DataGridTheme";
@@ -14,8 +14,19 @@ function DataGrid<T>({
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
-  const onGridReady = (params: { api: GridApi }) => {
+  if(agGridOptions)
+  agGridOptions.statusBar = {
+    "statusPanels": [
+      { "statusPanel": "agTotalAndFilteredRowCountComponent" },
+      { "statusPanel": "agSelectedRowCountComponent" },
+      { "statusPanel": "agAggregationComponent" }
+    ]
+  };
+
+  const onGridReady = (params: GridReadyEvent<T>) => {
     setGridApi(params.api);
+    if(agGridOptions.onGridReady)
+      agGridOptions.onGridReady(params);
   };
 
   const exportToExcel = () => {
@@ -24,11 +35,11 @@ function DataGrid<T>({
         fileName: "exported-data.xlsx",
         columnKeys: [
           "entityName",
-          "parentId",
+          "parentID",
           "status",
           "countryInc",
           "entityType",
-          "federalId",
+          "federalID",
           "functionalCurrency",
           "dateInc",
           "primaryContact",
@@ -38,10 +49,10 @@ function DataGrid<T>({
   };
 
   const onFilterTextBoxChanged = useCallback(() => {
-    gridRef.current!.api.setGridOption(
-      "quickFilterText",
-      (document.getElementById("filter-text-box") as HTMLInputElement).value
-    );
+    const filterValue = (document.getElementById("filter-text-box") as HTMLInputElement).value;
+    if (gridRef.current) { 
+      gridRef.current.api.setGridOption("quickFilterText", filterValue); // Set the quick filter text in the grid
+    }
   }, []);
 
   const defaultColDef: ColDef = {
@@ -54,10 +65,11 @@ function DataGrid<T>({
 
   return (
     <div className={"p-4 w-[100%] h-[90vh]"}>
-      <div className="p-2 flex justify-between">
-        <button onClick={exportToExcel}>Export to Excel</button>
 
-        <div className="flex space-x-4 justify-center items-center">
+      <div className="p-2 flex justify-end">
+        <div className="flex space-x-4 items-center">
+          <button onClick={exportToExcel} className="bg-blue-500 text-white px-3 py-2 rounded">Export to Excel</button>
+
           <span>Quick Filter:</span>
           <input
             className="p-1  rounded-sm"
