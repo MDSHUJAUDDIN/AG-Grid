@@ -54,7 +54,7 @@ function DataGrid<T>({
   };
   
   
-
+//'<span class="ag-icon ag-icon-menu" unselectable="on" role="presentation"></span>'
   const getContextMenuItems = (params: any) => {
     const result: any[] = [
       {
@@ -62,14 +62,14 @@ function DataGrid<T>({
         action: () => {
           console.log("Edit action clicked for", params.node.data);
         },
-        icon: '<i class="fas fa-edit"></i>',
+        icon: '<span class="ag-icon ag-icon-up" unselectable="on" role="presentation"></span>',
       },
       {
         name: "Add row below",
         action: () => {
           console.log("Add row below", params.node.data);
         },
-        icon: '<i class="fas fa-trash"></i>',
+        icon: '<span class="ag-icon ag-icon-down" unselectable="on" role="presentation"></span>',
       },
       "separator",
       {
@@ -80,34 +80,23 @@ function DataGrid<T>({
                 const selectedRows =[event.node.data];
                 event.api.applyTransaction({ remove: selectedRows });
             },
-        icon: '<i class="fas fa-trash"></i>',
+        icon: '<span unselectable="on" role="presentation"><img src="/icons/delete.svg" /></span>'
       },
       {
         name: "Highlight Row",
         action: () => {
           console.log("Highlight Row", params.node.data);
-          //highlightRow(params.node.data)
-
-        },
-        icon: '<i class="fas fa-trash"></i>',
+                  },
+        icon: '<span class="ag-icon ag-icon-menu" unselectable="on" role="presentation"></span>',
       },
     ];
     return result;
   };
-  
-  // const highlightRow = (nodeData : any) => {
-  //   const rowNode = nodeData;
-  //   console.log(rowNode);
-  //   rowNode.setData({ className: 'highlighted-row' });
-  // };
-
-
 
   return (
     <div className={"p-4 w-[100%] h-[90vh]"}>
       <div className="p-2 flex justify-between">
         <button onClick={exportToExcel}>Export to Excel</button>
-
         <div className="flex space-x-4 justify-center items-center">
           <span>Quick Filter:</span>
           <input
