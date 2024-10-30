@@ -31,21 +31,17 @@ const App: FC = () => {
     data.gridConfig.agGridOptions.onGridReady = onGridReady;
     data.gridConfig.agGridOptions.isExternalFilterPresent = isExternalFilterPresent;
     data.gridConfig.agGridOptions.doesExternalFilterPass = doesExternalFilterPass;
-    
-
     data.gridConfig.columnDefs.map((col)=>{
       if(col.headerName == 'Actions'){
         col.cellRenderer = ActionCellRenderer;
         col.editable = false;
-        
       }
-     
       return col;
     });
     console.log(data.gridConfig.columnDefs);
     setGridConfig(data)
   },[doesExternalFilterPass, isExternalFilterPresent])
-  
+
   const applyFilter = (filter: 'all' | 'active' | 'inactive') => {
     setActiveFilter(filter);
     filterBy = filter;
