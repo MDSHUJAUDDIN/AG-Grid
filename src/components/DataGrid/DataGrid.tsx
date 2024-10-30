@@ -13,6 +13,7 @@ function DataGrid<T>({
 }: DataGridProps<T>) {
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
+  const[rowsData,setRowsData]= useState(rowData);
 
   const onGridReady = (params: { api: GridApi }) => {
     setGridApi(params.api);
@@ -52,6 +53,80 @@ function DataGrid<T>({
     enableRowGroup: true,
   };
 
+  const getContextMenuItems = (params: any) => {
+    const result: any[] = [
+      {
+        name: "Add row Above",
+        action: () => {
+           const newRow = {
+          entityName: "ABC COrp Finace",
+          parentId: "Corp",
+          status: true,
+          countryInc: "India",
+          entityType: "Foreign",
+          federalId: "789115112",
+          functionalCurrency: "",
+          dateInc: "",
+          primaryContact: "John Constantine",
+        };
+        
+      
+        gridApi!.applyTransaction({ add: [newRow], addIndex: params.node.rowIndex});
+
+         
+         setTimeout(() => {
+          gridApi!.startEditingCell({
+            rowIndex: params.node.rowIndex-1, 
+            colKey: 'entityName', 
+                
+          });
+        }, 0);
+      },
+      icon: '<i class="fas fa-edit"></i>',
+    },
+      {
+        name: "Add row below",
+        action: () => {
+          const newRow = {
+            entityName: "",
+            parentId: "",
+            status: true,
+            countryInc: "",
+            entityType: "",
+            federalId: "",
+            functionalCurrency: "",
+            dateInc: "",
+            primaryContact: "",
+          };
+
+          const newRowData =[...rowsData];
+          newRowData.splice(params.node.rowIndex+1,0,newRow);
+          setRowsData(newRowData);
+          // gridApi!.setRowData(newRowData);
+          gridApi!.applyTransaction({ add: [newRow], addIndex: params.node.rowIndex + 1 });
+        },
+        icon: '<i class="fas fa-trash"></i>',
+      },
+      "separator",
+      {
+        name: "Delete",
+        action: () => {
+          alert("Delete action clicked for");
+        },
+        icon: '<i class="fas fa-trash"></i>',
+      },
+      {
+        name: "Highlight Row",
+        action: () => {
+          console.log("Highlight Row", params.node.data);
+        },
+        icon: '<i class="fas fa-trash"></i>',
+      },
+    ];
+    return result;
+  };
+
+
   return (
     <div className={"p-4 w-[100%] h-[90vh]"}>
       <div className="p-2 flex justify-between">
@@ -81,6 +156,7 @@ function DataGrid<T>({
         rowGroupPanelShow="always"
         rowDragManaged={true}
         suppressDragLeaveHidesColumns={true}
+        getContextMenuItems={getContextMenuItems}
         {...agGridOptions} // Spread any additional grid options from the config
       />
     </div>
