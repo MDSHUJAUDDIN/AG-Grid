@@ -4,7 +4,7 @@ export const DataGridTheme = themeQuartz
     .withPart(iconSetMaterial)
     .withParams({
         //iconSize: 16,
-        //oddRowBackgroundColor: '#FAFAFA',
+        oddRowBackgroundColor: '#FAFAFA',
         //rowHoverColor: "#c3defa",
         //rowBorder: "none",
         //selectedRowBackgroundColor: "#80bbff",
