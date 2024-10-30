@@ -4,6 +4,7 @@ import DataGrid from "./components/DataGrid/DataGrid";
 import { DataGridConfig } from "./components/DataGrid/DataGridConfig";
 import { GridApi, GridReadyEvent, IRowNode } from "ag-grid-enterprise";
 import { Entity } from "./models/Entity";
+import {ActionCellRenderer} from './components/DataGrid/ActionCellRenderer';
 
 let filterBy: 'all' | 'active' | 'inactive' = 'all'
 const App: FC = () => {
@@ -30,6 +31,18 @@ const App: FC = () => {
     data.gridConfig.agGridOptions.onGridReady = onGridReady;
     data.gridConfig.agGridOptions.isExternalFilterPresent = isExternalFilterPresent;
     data.gridConfig.agGridOptions.doesExternalFilterPass = doesExternalFilterPass;
+    
+
+    data.gridConfig.columnDefs.map((col)=>{
+      if(col.headerName == 'Actions'){
+        col.cellRenderer = ActionCellRenderer;
+        col.editable = false;
+        
+      }
+     
+      return col;
+    });
+    console.log(data.gridConfig.columnDefs);
     setGridConfig(data)
   },[doesExternalFilterPass, isExternalFilterPresent])
   
