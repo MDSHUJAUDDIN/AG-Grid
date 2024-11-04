@@ -110042,10 +110042,7 @@
       {
         "headerName": "Primary Contact",
         "field": "primaryContact"
-      },
-      {
-        "headerName": "Actions",
-        "field": ""
+        
       }
     ],
     "agGridOptions": {
@@ -110055,7 +110052,8 @@
       "enableRangeSelection": true,
       "enableCellChUSDeFlash": true,
       "enableRangeHandle": true,
-      "enableFillHandle": true
+      "enableFillHandle": true,
+      "suppressCellContextMenu":true
     }
   }
 }

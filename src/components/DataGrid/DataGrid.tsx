@@ -1,103 +1,55 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, GridApi } from "ag-grid-community";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
 import { DataGridTheme } from "./DataGridTheme";
-import { SetFilter } from "ag-grid-enterprise";
+import {getContextMenuItems} from "./DataGridUtil.ts";
+import {DEFAULT_COL_DEF} from "./DataGridDefaultOptions.ts";
 
 type DataGridProps<T> = DataGridConfig<T>;
+
 
 function DataGrid<T>({
   gridConfig: { columnDefs, agGridOptions },
   rowData,
 }: DataGridProps<T>) {
   const gridRef = useRef<AgGridReact>(null);
-  const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
-  const onGridReady = (params: { api: GridApi }) => {
-    setGridApi(params.api);
+
+  //TODO: we need to merge the default options with the options we get from the DB. default options are moved to DataGridDefaultOptions.ts and remove this.
+  if(agGridOptions)
+  agGridOptions.statusBar = {
+    "statusPanels": [
+      { "statusPanel": "agTotalAndFilteredRowCountComponent" },
+      { "statusPanel": "agSelectedRowCountComponent" },
+      { "statusPanel": "agAggregationComponent" }
+    ]
   };
 
   const exportToExcel = () => {
-    if (gridApi) {
-      gridApi.exportDataAsExcel({
-        fileName: "exported-data.xlsx",
-        columnKeys: [
-          "entityName",
-          "parentId",
-          "status",
-          "countryInc",
-          "entityType",
-          "federalId",
-          "functionalCurrency",
-          "dateInc",
-          "primaryContact",
-        ],
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsExcel({
+        fileName: "exported-data.xlsx"
       });
     }
   };
 
   const onFilterTextBoxChanged = useCallback(() => {
-    gridRef.current!.api.setGridOption(
-      "quickFilterText",
-      (document.getElementById("filter-text-box") as HTMLInputElement).value
-    );
+    const filterValue = (document.getElementById("filter-text-box") as HTMLInputElement).value;
+    if (gridRef.current) {
+      gridRef.current.api.setGridOption("quickFilterText", filterValue); // Set the quick filter text in the grid
+    }
   }, []);
 
-  const defaultColDef: ColDef = {
-    sortable: true,
-    editable: true,
-    resizable: true,
-    tooltipValueGetter: (params) => params.value,
-    enableRowGroup: true,
-  };
-  
-  
-//'<span class="ag-icon ag-icon-menu" unselectable="on" role="presentation"></span>'
-  const getContextMenuItems = (params: any) => {
-    const result: any[] = [
-      {
-        name: "Add row Above",
-        action: () => {
-          console.log("Edit action clicked for", params.node.data);
-        },
-        icon: '<span class="ag-icon ag-icon-up" unselectable="on" role="presentation"></span>',
-      },
-      {
-        name: "Add row below",
-        action: () => {
-          console.log("Add row below", params.node.data);
-        },
-        icon: '<span class="ag-icon ag-icon-down" unselectable="on" role="presentation"></span>',
-      },
-      "separator",
-      {
-        name: "Delete",
-        action: (event: { node: { data: any; }; api: 
-          { applyTransaction: (arg0: { remove: any[]; }) => void; }; }) => 
-            {
-                const selectedRows =[event.node.data];
-                event.api.applyTransaction({ remove: selectedRows });
-            },
-        icon: '<span unselectable="on" role="presentation"><img src="/icons/delete.svg" /></span>'
-      },
-      {
-        name: "Highlight Row",
-        action: () => {
-          console.log("Highlight Row", params.node.data);
-                  },
-        icon: '<span class="ag-icon ag-icon-menu" unselectable="on" role="presentation"></span>',
-      },
-    ];
-    return result;
-  };
+
 
   return (
     <div className={"p-4 w-[100%] h-[90vh]"}>
-      <div className="p-2 flex justify-between">
-        <button onClick={exportToExcel}>Export to Excel</button>
-        <div className="flex space-x-4 justify-center items-center">
+
+      <div className="p-2 flex justify-end">
+        <div className="flex space-x-4 items-center">
+          <button onClick={exportToExcel} className="bg-blue-500 text-white px-3 py-2 rounded">Export to Excel</button>
+
           <span>Quick Filter:</span>
           <input
             className="p-1  rounded-sm"
@@ -113,17 +65,15 @@ function DataGrid<T>({
         theme={DataGridTheme}
         ref={gridRef}
         columnDefs={columnDefs}
-        defaultColDef={defaultColDef}
+        defaultColDef={DEFAULT_COL_DEF}
         rowData={rowData}
-        onGridReady={onGridReady}
         rowSelection={{ mode: "multiRow" }}
         animateRows
         rowGroupPanelShow="always"
         rowDragManaged={true}
         suppressDragLeaveHidesColumns={true}
-        getContextMenuItems={getContextMenuItems} 
-        //getRowStyle={getRowStyle}
-        {...agGridOptions} // Spread any additional grid options from the config
+        getContextMenuItems={getContextMenuItems}
+        {...agGridOptions}
       />
     </div>
   );
