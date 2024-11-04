@@ -27,6 +27,7 @@ export const getContextMenuItems = (params: GetContextMenuItemsParams):(string |
                 params.api.applyTransaction({ add: [{}], addIndex: params.node.rowIndex })
                 startEditing(params, -1);
             },
+            icon: '<span class="ag-icon ag-icon-up" unselectable="on" role="presentation"></span>',
         },
         {
             name: "Add row below",
@@ -38,20 +39,17 @@ export const getContextMenuItems = (params: GetContextMenuItemsParams):(string |
 
                 startEditing(params, 1);
             },
+            icon: '<span class="ag-icon ag-icon-down" unselectable="on" role="presentation"></span>',
         },
-        "separator",
         {
             name: "Delete",
             action: () => {
-                alert("Delete action clicked for");
+                if(!params.node)
+                    return;
+                const selectedRows =[params.node.data];
+                params.api.applyTransaction({ remove: selectedRows });
             },
-        },
-        {
-            name: "Highlight Row",
-            action: () => {
-                if(params.node)
-                    console.log("Highlight Row", params.node.data);
-            },
+            icon: '<span class="ag-icon ag-icon-cancel" unselectable="on" role="presentation"></span>'
         },
     ];
 };
