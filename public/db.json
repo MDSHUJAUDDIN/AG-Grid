@@ -110043,12 +110043,6 @@
         "headerName": "Primary Contact",
         "field": "primaryContact"
         
-      },
-      {
-        "headerName": "Actions",
-        "field": "",
-        "cellRenderer" : {}
-        
       }
     ],
     "agGridOptions": {

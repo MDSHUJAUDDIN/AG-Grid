@@ -1,21 +1,22 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
 import { DataGridTheme } from "./DataGridTheme";
-import { createNewEntity } from "./createNewEntity";
+import {getContextMenuItems} from "./DataGridUtil.ts";
+import {DEFAULT_COL_DEF} from "./DataGridDefaultOptions.ts";
 
 type DataGridProps<T> = DataGridConfig<T>;
+
 
 function DataGrid<T>({
   gridConfig: { columnDefs, agGridOptions },
   rowData,
 }: DataGridProps<T>) {
   const gridRef = useRef<AgGridReact>(null);
-  const [gridApi, setGridApi] = useState<GridApi | null>(null);
-  
 
+
+  //TODO: we need to merge the default options with the options we get from the DB. default options are moved to DataGridDefaultOptions.ts and remove this.
   if(agGridOptions)
   agGridOptions.statusBar = {
     "statusPanels": [
@@ -25,87 +26,23 @@ function DataGrid<T>({
     ]
   };
 
-  const onGridReady = (params: GridReadyEvent<T>) => {
-    setGridApi(params.api);
-    if(agGridOptions.onGridReady)
-      agGridOptions.onGridReady(params);
-  };
-
   const exportToExcel = () => {
-    if (gridApi) {
-      gridApi.exportDataAsExcel({
-        fileName: "exported-data.xlsx",
-        columnKeys: [
-          "entityName",
-          "parentID",
-          "status",
-          "countryInc",
-          "entityType",
-          "federalID",
-          "functionalCurrency",
-          "dateInc",
-          "primaryContact",
-        ],
+    if (gridRef.current) {
+      gridRef.current.api.exportDataAsExcel({
+        fileName: "exported-data.xlsx"
       });
     }
   };
 
   const onFilterTextBoxChanged = useCallback(() => {
     const filterValue = (document.getElementById("filter-text-box") as HTMLInputElement).value;
-    if (gridRef.current) { 
+    if (gridRef.current) {
       gridRef.current.api.setGridOption("quickFilterText", filterValue); // Set the quick filter text in the grid
     }
   }, []);
 
-  const defaultColDef: ColDef = {
-    sortable: true,
-    editable: true,
-    resizable: true,
-    tooltipValueGetter: (params) => params.value,
-    enableRowGroup: true,
-  };
 
-  const getContextMenuItems = (params: any) => {
-    const isActionsColumn = params.column.getColDef().headerName === 'Actions';
-    if (!isActionsColumn) {
-      return [];
-    }
-    return [
-      {
-        name: "Add row Above",
-        action: () => {
-           const newRow = createNewEntity();
-           params.api.applyTransaction({ add: [newRow], addIndex: params.node.rowIndex });
-         setTimeout(() => {
-          gridApi!.startEditingCell({
-            rowIndex: params.node.rowIndex-1, 
-            colKey: 'entityName',  
-          });
-        }, 0);
-      },
-    },
-      {
-        name: "Add row below",
-        action: () => {
-          const newRow = createNewEntity();
-          params.api.applyTransaction({ add: [newRow], addIndex: params.node.rowIndex + 1 });
-        },
-      },
-      "separator",
-      {
-        name: "Delete",
-        action: () => {
-          alert("Delete action clicked for");
-        },
-      },
-      {
-        name: "Highlight Row",
-        action: () => {
-          console.log("Highlight Row", params.node.data);
-        },
-      },
-    ];
-  };
+
   return (
     <div className={"p-4 w-[100%] h-[90vh]"}>
 
@@ -128,16 +65,15 @@ function DataGrid<T>({
         theme={DataGridTheme}
         ref={gridRef}
         columnDefs={columnDefs}
-        defaultColDef={defaultColDef}
+        defaultColDef={DEFAULT_COL_DEF}
         rowData={rowData}
-        onGridReady={onGridReady}
         rowSelection={{ mode: "multiRow" }}
         animateRows
         rowGroupPanelShow="always"
         rowDragManaged={true}
         suppressDragLeaveHidesColumns={true}
         getContextMenuItems={getContextMenuItems}
-        {...agGridOptions} 
+        {...agGridOptions}
       />
     </div>
   );
