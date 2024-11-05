@@ -110014,6 +110014,7 @@
       {
         "headerName": "Status",
         "field": "status",
+        "cellRenderer": "StatusCellRenderer",
         "cellEditor": "agCheckboxCellEditor"
       },
       {
@@ -110045,15 +110046,6 @@
         
       }
     ],
-    "agGridOptions": {
-      "suppressRowClickSelection": true,
-      "rowMultiSelectWithClick": true,
-      "animateRows": true,
-      "enableRangeSelection": true,
-      "enableCellChUSDeFlash": true,
-      "enableRangeHandle": true,
-      "enableFillHandle": true,
-      "suppressCellContextMenu":true
-    }
+    "agGridOptions": {}
   }
 }

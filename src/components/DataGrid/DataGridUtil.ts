@@ -53,3 +53,16 @@ export const getContextMenuItems = (params: GetContextMenuItemsParams):(string |
         },
     ];
 };
+
+export const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
+    for (const key in source) {
+        if (source[key] instanceof Object && key in target) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            target[key] = deepMerge(target[key] as any, source[key] as any);
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            target[key] = source[key] as any;
+        }
+    }
+    return target;
+};

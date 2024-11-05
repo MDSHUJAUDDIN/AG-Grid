@@ -3,11 +3,12 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import { DataGridConfig } from "./DataGridConfig";
 import { DataGridTheme } from "./DataGridTheme";
-import {getContextMenuItems} from "./DataGridUtil.ts";
-import {DEFAULT_COL_DEF} from "./DataGridDefaultOptions.ts";
+import { deepMerge, getContextMenuItems } from "./DataGridUtil.ts";
+import { DEFAULT_COL_DEF, DEFAULT_AG_GRID_OPTIONS } from "./DataGridDefaultOptions.ts";
+import { ColDef } from "ag-grid-enterprise";
+import { renderers } from "./cell-renderers/index.ts";
 
 type DataGridProps<T> = DataGridConfig<T>;
-
 
 function DataGrid<T>({
   gridConfig: { columnDefs, agGridOptions },
@@ -15,16 +16,15 @@ function DataGrid<T>({
 }: DataGridProps<T>) {
   const gridRef = useRef<AgGridReact>(null);
 
+  //merging default grid options with data json grid options
+  agGridOptions = deepMerge(agGridOptions, DEFAULT_AG_GRID_OPTIONS);
 
-  //TODO: we need to merge the default options with the options we get from the DB. default options are moved to DataGridDefaultOptions.ts and remove this.
-  if(agGridOptions)
-  agGridOptions.statusBar = {
-    "statusPanels": [
-      { "statusPanel": "agTotalAndFilteredRowCountComponent" },
-      { "statusPanel": "agSelectedRowCountComponent" },
-      { "statusPanel": "agAggregationComponent" }
-    ]
-  };
+  //Mapping string to Cell renderers
+  columnDefs.map((element: ColDef<T>) => {
+    if (element.cellRenderer && renderers[element.cellRenderer]){
+      element.cellRenderer = renderers[element.cellRenderer]; 
+    }
+  });
 
   const exportToExcel = () => {
     if (gridRef.current) {
@@ -41,10 +41,8 @@ function DataGrid<T>({
     }
   }, []);
 
-
-
   return (
-    <div className={"p-4 w-[100%] h-[90vh]"}>
+    <div className={"p-4 w-full h-[90vh]"}>
 
       <div className="p-2 flex justify-end">
         <div className="flex space-x-4 items-center">
@@ -52,7 +50,7 @@ function DataGrid<T>({
 
           <span>Quick Filter:</span>
           <input
-            className="p-1  rounded-sm"
+            className="p-1 rounded-sm"
             type="text"
             id="filter-text-box"
             placeholder="Filter..."
@@ -67,11 +65,6 @@ function DataGrid<T>({
         columnDefs={columnDefs}
         defaultColDef={DEFAULT_COL_DEF}
         rowData={rowData}
-        rowSelection={{ mode: "multiRow" }}
-        animateRows
-        rowGroupPanelShow="always"
-        rowDragManaged={true}
-        suppressDragLeaveHidesColumns={true}
         getContextMenuItems={getContextMenuItems}
         {...agGridOptions}
       />
