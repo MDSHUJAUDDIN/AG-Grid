@@ -22,7 +22,10 @@ function DataGrid<T>({
   //Mapping string to Cell renderers
   columnDefs.map((element: ColDef<T>) => {
     if (element.cellRenderer && renderers[element.cellRenderer]){
-      element.cellRenderer = renderers[element.cellRenderer]; 
+      element.cellRenderer = renderers[element.cellRenderer];
+      if(element.cellEditor === "agRichSelectCellEditor" && element.cellEditorParams && element.cellEditorParams.cellRenderer){
+        element.cellEditorParams.cellRenderer = renderers[element.cellEditorParams.cellRenderer]; 
+      }
     }
   });
 
