@@ -5,6 +5,8 @@ import { DataGridConfig } from "./DataGridConfig";
 import { DataGridTheme } from "./DataGridTheme";
 import {getContextMenuItems} from "./DataGridUtil.ts";
 import {DEFAULT_COL_DEF} from "./DataGridDefaultOptions.ts";
+import { ColDef } from "ag-grid-enterprise";
+import { renderers } from "./cell-renderers/index.ts";
 
 type DataGridProps<T> = DataGridConfig<T>;
 
@@ -33,6 +35,16 @@ function DataGrid<T>({
       });
     }
   };
+
+  columnDefs.map((element: ColDef<T>) => {
+    if (element.cellRenderer && renderers[element.cellRenderer]){
+      element.cellRenderer = renderers[element.cellRenderer]; 
+      if(element.cellEditor === "agRichSelectCellEditor" && element.cellEditorParams && element.cellEditorParams.cellRenderer){
+        element.cellEditorParams.cellRenderer = renderers[element.cellEditorParams.cellRenderer]; 
+      }
+    }
+    
+  });
 
   const onFilterTextBoxChanged = useCallback(() => {
     const filterValue = (document.getElementById("filter-text-box") as HTMLInputElement).value;

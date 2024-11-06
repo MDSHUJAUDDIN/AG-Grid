@@ -110014,7 +110014,13 @@
       {
         "headerName": "Status",
         "field": "status",
-        "cellEditor": "agCheckboxCellEditor"
+        "cellRenderer": "StatusCellRenderer",
+        "cellEditor": "agRichSelectCellEditor",
+        "cellEditorParams":{
+          "values":[true,false],
+          "cellRenderer":"StatusCellRenderer"
+        }
+        
       },
       {
         "headerName": "Country Inc.",
