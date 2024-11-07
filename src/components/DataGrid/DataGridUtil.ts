@@ -14,10 +14,6 @@ export function startEditing(params: GetContextMenuItemsParams, indexOffset: num
 }
 
 export const getContextMenuItems = (params: GetContextMenuItemsParams):(string | MenuItemDef)[] => {
-    // const isActionsColumn = params.column?.getColDef().headerName === 'Actions';
-    // if (!isActionsColumn) {
-    //   return [];
-    // }
     return [
         {
             name: "Add row Above",
